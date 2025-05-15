@@ -1,0 +1,25 @@
+{
+  "task_presets": {
+    "small": {
+      "duration": 15,
+      "break_time": 5,
+      "description": "Quick tasks and simple activities"
+    },
+    "medium": {
+      "duration": 30,
+      "break_time": 8,
+      "description": "Standard complexity tasks"
+    },
+    "long": {
+      "duration": 45,
+      "break_time": 15,
+      "description": "Complex or intensive tasks"
+    },
+    "settings": {
+      "sound_enabled": true,
+      "notifications_enabled": true,
+      "long_break_after": 4,
+      "long_break_duration": 20
+    }
+  }
+}

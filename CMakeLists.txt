@@ -54,7 +54,7 @@ message(" - Enable this module: \"${PARAM_ENABLE_PACKAGE_MODULE}\"")
 message("")
 message("")
 message("== 1. Initialization of the generation of the project build-tree  ==")
-
+message("Hassan Stupid message")
 
 #---- Project declaration. ----
 message(STATUS "Check the project name")
@@ -73,12 +73,16 @@ set(${PROJECT_NAME}_VERSION_MAJOR   "${PARAM_PROJECT_VERSION_MAJOR}")
 set(${PROJECT_NAME}_VERSION_MINOR   "${PARAM_PROJECT_VERSION_MINOR}")
 set(${PROJECT_NAME}_VERSION_PATCH   "${PARAM_PROJECT_VERSION_PATCH}")
 set(${PROJECT_NAME}_VERSION         "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+
+message("Hassan Stupid message 2")
 project("${PARAM_PROJECT_NAME}"
 	VERSION "${${PROJECT_NAME}_VERSION}"
 	DESCRIPTION "${${PROJECT_NAME}_SUMMARY}"
 	HOMEPAGE_URL "${${PROJECT_NAME}_VENDOR_CONTACT}"
 	LANGUAGES CXX)
 
+	
+	message("Hassan Stupid message 3")	
 message(STATUS "Project declared with the name \"${PROJECT_NAME}\" and in the version ${${PROJECT_NAME}_VERSION}")
 
 
@@ -232,6 +236,7 @@ elseif("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "exec")
 	set(${PROJECT_NAME}_MAIN_BIN_TARGET             "${PROJECT_NAME}")
 	message(STATUS "Add the main executable build target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
 	add_executable("${${PROJECT_NAME}_MAIN_BIN_TARGET}")
+
 else()
 	message(FATAL_ERROR "A binary build target type must be \"static\" or \"shared\" or \"header\" or \"exec\"!")
 endif()
@@ -401,9 +406,11 @@ print(STATUS LISTS "${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}" INDENT)
 
 # Link imported internal libraries targets to the main binary build target.
 message(STATUS "Link imported internal library targets found to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
+Find_Package(OpenSSL REQUIRED)
 target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PRIVATE
 		"${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}"
+		OpenSSL::Crypto
 )
 
 # Add `include/` directory to incude directories of the main binary build target.
@@ -414,11 +421,37 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 )
 message(STATUS "Add internal dependencies - done")
 
-
 #---- Import and link external dependencies to the main binary build target. ----
 message("")
 message(STATUS "Add external dependencies")
-include(DependenciesExternalOptions)
+include(FetchContent)
+
+FetchContent_Declare(
+ 	json
+ 	GIT_REPOSITORY https://github.com/nlohmann/json.git
+ 	GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(json)
+FetchContent_Declare(
+     cli11
+     QUIET
+     GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+     GIT_TAG v2.3.2
+ )
+ FetchContent_MakeAvailable(cli11)
+
+
+
+
+target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PRIVATE ${json_SOURCE_DIR}/include)
+target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PRIVATE ${cli11_SOURCE_DIR}/include)
+
+
+
+
+
+
+
 message(STATUS "Add external dependencies - done")
 
 

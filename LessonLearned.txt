@@ -1,0 +1,32 @@
+Conclusion: How We Got the Project Working
+We encountered a series of issues while setting up the project on macOS due to a combination of cross-compilation misconfigurations and missing dependencies, particularly OpenSSL. Here’s a summary of the steps we took to resolve these issues and get the project building successfully:
+
+1. Identifying the Cross-Compilation Issue
+The first major hurdle was that CMake was attempting to cross-compile for Linux (x86_64-pc-linux-gnu) while we were working on a macOS machine (Darwin). This was due to the cross-compilation toolchain (Linux_clang.cmake) specified in the CMake configuration.
+Problem: The CMake configuration was set up to use a Linux toolchain on macOS, causing CMake to treat macOS as a Linux target system.
+Solution: We modified the CMake configuration to ensure that macOS uses its native toolchain instead of a Linux one. Specifically, we adjusted the CMakeLists.txt file to use a macOS-specific toolchain for macOS builds, instead of using the Linux-based toolchain that was causing the issue.
+
+2. Installing and Configuring CMake
+On macOS, we needed to install a proper version of CMake to ensure compatibility with modern projects and tools. We installed CMake using Homebrew, ensuring that the latest version was available and that it was properly configured for macOS development.
+Problem: The version of CMake that came pre-installed with macOS was outdated and lacked compatibility with certain features needed for building the project.
+Solution: We installed the latest version of CMake via Homebrew (brew install cmake), ensuring that the build system could work with the necessary tools and features.
+
+3. Addressing the OpenSSL Dependency
+Another issue we encountered was that CMake could not find OpenSSL on macOS. While Ubuntu likely had OpenSSL pre-installed, macOS doesn’t come with it by default, and CMake needed explicit instructions on where to find it.
+Problem: CMake could not find the OpenSSL libraries and headers, even though our project didn’t directly use them. This was caused by an external library being fetched (via FetchContent) that required OpenSSL as a transitive dependency.
+Solution: We installed OpenSSL via Homebrew (brew install openssl@1.1), and then we passed the correct paths to CMake using the OPENSSL_ROOT_DIR, OPENSSL_INCLUDE_DIR, and OPENSSL_LIBRARIES variables.
+
+4. Final Configuration Changes
+After adjusting the toolchain and ensuring that OpenSSL was installed correctly, we ran the CMake configuration again, passing the correct OpenSSL paths. This allowed CMake to successfully find all required dependencies and configure the project.
+Key Changes:
+Modified the toolchain file to ensure that macOS was using a native compiler instead of the Linux cross-compiler.
+Installed OpenSSL via Homebrew and directed CMake to its installation path.
+Installed the latest version of CMake to ensure compatibility with macOS.
+
+Outcome
+With these changes, we were able to successfully configure and build the project on macOS without any issues related to cross-compilation or missing dependencies. The project now builds as expected, and OpenSSL is correctly linked without requiring additional intervention.
+This process involved:
+Fixing the cross-compilation misconfiguration that caused CMake to assume a Linux environment on macOS.
+Ensuring that the necessary development tools (CMake and OpenSSL) were installed and correctly configured.
+Adjusting CMake settings to explicitly specify paths for OpenSSL.
+By following these steps, we were able to overcome the challenges and get the project working on macOS, closely mirroring the success we had on Ubuntu.
